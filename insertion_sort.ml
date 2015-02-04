@@ -1,3 +1,12 @@
+open Printf
+
+let files = [
+   "Randomnm100.txt",
+   "Randomnm1000.txt",
+   "Randomnm10000.txt",
+   "Randomnm100000.txt"
+];;
+
 (* Does an insertion sort on `alist` *)
 let rec isort alist = 
    match alist with
@@ -37,5 +46,6 @@ List.map (print_int_space) [9; 4; 6; 7; 5; 1];;
 print_string "\n to: \t";;
 
 List.map (print_int_space) (isort [9; 4; 6; 7; 5; 1]);;
+
 
 
