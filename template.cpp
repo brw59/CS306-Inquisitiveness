@@ -1,41 +1,64 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdlib>
 
 using namespace std;
 
-void addData(int argc, char file[], vector<int> & storage)
+/***************************************************************************
+ * This will grab all the numbers from a single file and store it in "numbers" 
+ ***************************************************************************/
+void fileToVector(char filename[], vector<int> *numbers)
 {
-   if(argc != 1)
-   {
-      cout << "To properly use the program, pass in a file name as a command"
-           << "line argument" << endl
-           << "example: ./a.out filename" << endl;
-      exit(0);
-   }
 
    int fData;
-   ifstream fin(file);
+   ifstream fin(filename);
 
    while(fin >> fData)
    {
-      storage.push_back(fData);
+      numbers->push_back(fData);
    }
 }
+
+/***************************************************************************
+ * This will concatinate all the files passed in into one vector
+ ***************************************************************************/
+vector<int>* argsToNumbers(int argc, char* argv[])
+{
+   vector<int>* numbers = new vector<int>;
+
+   if(argc == 1)
+   {
+      cout << "To properly use the program, pass in a file names seperated by a space" << endl
+
+           << "example: ./a.out filename1 filename2 ..." << endl;
+      exit(0);
+   }
+    
+   for (int i = 0; i < argc; ++i)
+   {
+      fileToVector(argv[i], numbers);
+   }
+
+   return numbers;
+}
+
 
 
 int main(int argc, char * argv[])
 {
-   vector<int> data;
+   vector<int> *numbers = argsToNumbers(argc, argv);
 
-   addData(argc, argv[1], data);
+   // sort(numbers)
 
+   cout << "[ ";
+   
+   for (int i = 0; i < numbers->size(); ++i)
+   {
+      cout << numbers->at(i) << ", ";
+   }
 
-
-
-
-
-
+   cout << "]" << endl;
 
    return 0;
 }

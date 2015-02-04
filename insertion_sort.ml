@@ -1,5 +1,8 @@
 open Printf
 
+(* Note this is a comment*)
+(* I'll note the stuff in this file that are *)
+
 let files = [
    "Randomnm100.txt",
    "Randomnm1000.txt",
