@@ -19,7 +19,7 @@ class Heap
 {
   public:
    // Default Constructor
-   Heap<T>() : array(NULL), num(0){}
+   Heap<T>() : array(NULL), num(0){} 
    // non default constructor
    Heap<T>(T theArray[], int theNum) : array(theArray), num(theNum){array--;}
 
@@ -29,7 +29,7 @@ class Heap
    void sort();
    void percolateDown(int i);
    bool notHeap();
-
+   
   private:
    T * array;
    int num;
@@ -56,7 +56,7 @@ void Heap<T> :: heapify()
          percolateDown(i);   //Recusrive
       }
    }
-
+   
 }
 
 /*****************************************************
@@ -67,7 +67,7 @@ void Heap<T> :: percolateDown(int i)
 {
    iRight = 2 * i + 1;
    iLeft = 2 * i;
-
+   
    if (array[iLeft] >  array[i] && array[iLeft] > array[iRight])
    {
       if (iLeft > num)
@@ -78,7 +78,7 @@ void Heap<T> :: percolateDown(int i)
       array[iLeft] = temp;
       percolateDown(iLeft);
    }
-
+   
    if (array[iRight] > array[i])
    {
       if (iRight > num)
@@ -89,9 +89,9 @@ void Heap<T> :: percolateDown(int i)
       array[iRight] = temp;
       percolateDown(iRight);
    }
-
-   else
-      return;
+   
+   else 
+      return;  
 }
 
 /*****************************************************
