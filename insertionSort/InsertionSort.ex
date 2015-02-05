@@ -51,6 +51,7 @@ defmodule InsertionSort do
     IO.puts Enum.join(sortedlist, " ")
   end
 
+
 end
 
 
