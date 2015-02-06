@@ -3,7 +3,7 @@
 *    Lesson 10, Sorting
 *    Brother Helfrich, CS 235
 * Author:
-*    Br. Helfrich
+*    Br. Helfrich and the Gang
 * Summary: 
 *    This is a driver program to exercise various Sort algorithsm. When you
 *    submit your program, this should not be changed in any way.  That being
@@ -14,6 +14,8 @@
 #include <iomanip>         // for SETW
 #include <ctime>           // for time(), part of the random process
 #include <stdlib.h>        // for rand() and srand()
+#include <istream>         // for input data read
+#include <vector>          // for buffer when reading data
 #include "sortValue.h"     // for SortValue to instrument the sort algorithms
 #include "bubble/sortBubble.h"    // for sortBubble()
 #include "selection/sortSelection.h" // for sortSelection()
@@ -26,7 +28,8 @@ using namespace std;
 
 // prototypes for our test functions
 void compareSorts();
-void testIndividualSorts(int choice);
+void compareSortsAutomated(string);
+void testIndividualSorts(int);
 
 /******************************************
  * SORT NAME AND FUNCTION
@@ -55,29 +58,80 @@ const SortNameAndFunction sorts[] =
  * MAIN
  * This is just a simple menu to launch a collection of tests
  ***********************************************************************/
-int main()
+int main(const int argc, const char* argv[])
 {
-   // menu, built from the sortValues list above
-   cout << "Select the test you want to run:\n";
-   cout << "\t0. To compare all the sorting algoritms\n";
-   for (int i = 1; i <= 7; i++)
-      cout << '\t' << i << ". "
-           << sorts[i].name << endl;
+    if (argc > 1)
+    {
+        compareSortsAutomated(argv[1]);
+    }
+    else
+    {
+       // menu, built from the sortValues list above
+        while(true)
+        {
+           cout << "Select the test you want to run:\n";
+           cout << "\t0. To compare all the sorting algoritms\n";
+           for (int i = 1; i <= 7; i++)
+              cout << '\t' << i << ". "
+                   << sorts[i].name << endl;
 
-   // user specifies his choice
-   int choice;
-   cout << "> ";
-   cin  >> choice;
+           // user specifies his choice
+           int choice;
+           cout << "> ";
+           cin  >> choice;
 
-   // execute the user's choice
-   if (choice == 0)
-      compareSorts();
-   else if (choice >= 1 && choice <= 7)
-      testIndividualSorts(choice);
-   else
-      cout << "Unrecognized command, exiting...\n";
+            if (cin.fail())
+            {
+                cout << "Goodbye!\n";
+                return 0;
+            }
 
+           // execute the user's choice
+           if (choice == 0)
+              compareSorts();
+           else if (choice >= 1 && choice <= 7)
+              testIndividualSorts(choice);
+           else
+              cout << "Unrecognized command, exiting...\n";
+        }
+    }
    return 0;
+}
+
+void readTestArrays(SortValue * & arrayStart,
+                      SortValue * & arraySort,
+                      int & num, string filename = "")
+{
+    int intBuffer;
+    vector<int> buffer;
+    
+    if (filename == "")
+    {
+        // prompt for file to read
+        cout << "Where is the input file?\n> ";
+        getline(cin, filename);
+    }
+    
+    // read the file
+    cout << "Reading file: " << filename << endl;
+    ifstream fin(filename.c_str());
+    if(!fin.is_open())
+    {
+        cout << "File not found! Aborting application...\n";
+        exit(0);
+    }
+    while(fin >> intBuffer)
+    {
+        buffer.push_back(intBuffer);
+    }
+    
+    // copy to array to fit in with the other kids
+    num = buffer.size();
+    arrayStart = new(nothrow) SortValue[num];
+    arraySort  = new(nothrow) SortValue[num];
+    
+    for (int i = 0; i < num; i++)
+        arrayStart[i] = buffer[i];
 }
 
 /*******************************************
@@ -89,7 +143,7 @@ int main()
 void createTestArrays(SortValue * & arrayStart,
                       SortValue * & arraySort,
                       int & num)
-{
+{   
    // prompt for size
    cout << "How many items in the test (10000 - 40000 are good numbers)? ";
    cin  >> num;
@@ -139,6 +193,46 @@ void createTestArrays(SortValue * & arrayStart,
    }
 }
 
+void compareSortsAutomated(string filename)
+{
+    // allocate the array
+   SortValue * arrayStart;
+   SortValue * arraySort;
+   int num;
+    
+    readTestArrays(arrayStart, arraySort, num, filename);
+    
+    // get ready with the header to the table
+   srand(time(NULL));
+   cout.setf(ios::fixed);
+   cout.precision(2);
+   system("clear");
+   cout << "      Sort Name    Time       Assigns      Compares\n";
+   cout << " ---------------+-------+-------------+-------------\n";
+
+   for (int iSort = 1; iSort <= 7; iSort++)
+   {
+      // get ready by copying the un-sorted numbers to the array
+      for (int iValue = 0; iValue < num; iValue++)
+         arraySort[iValue] = arrayStart[iValue];
+      arraySort[0].reset();
+
+      // perform the sort
+      int msBegin = clock();
+      sorts[iSort].sortValue(arraySort, num);
+      int msEnd = clock();
+
+      // report the results
+      cout << setw(15) << sorts[iSort].name                    << " |"
+           << setw(6)  << (float)(msEnd - msBegin) / 1000000.0 << " |"
+           << setw(12) << arraySort[0].getAssigns()            << " |"
+           << setw(12) << arraySort[0].getCompares()           << endl;
+   }
+
+   // all done
+   delete [] arrayStart;
+   delete [] arraySort;
+}
 
 /*******************************************
  * COMPARE SORTS
@@ -150,7 +244,18 @@ void compareSorts()
    SortValue * arrayStart;
    SortValue * arraySort;
    int num;
-   createTestArrays(arrayStart, arraySort, num);
+    
+    // prompt for input type
+    string buffer;
+    cout << "Would you like to get input from a file?\n> ";
+    cin.ignore(128, '\n');
+    getline(cin, buffer);
+    
+    if(tolower(buffer[0]) == 'y')
+        readTestArrays(arrayStart, arraySort, num);
+    else
+        createTestArrays(arrayStart, arraySort, num);
+    
    if (arrayStart == NULL || arraySort == NULL)
       return;
 
@@ -158,6 +263,7 @@ void compareSorts()
    srand(time(NULL));
    cout.setf(ios::fixed);
    cout.precision(2);
+   system("clear");
    cout << "      Sort Name    Time       Assigns      Compares\n";
    cout << " ---------------+-------+-------------+-------------\n";
 
