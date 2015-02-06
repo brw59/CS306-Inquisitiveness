@@ -2,7 +2,7 @@
 
 Merge sort works
 
-quick sort and heap sort .cpp files currently do not
+heap sort .cpp files currently do not
 
 the .py program takes 1 command line argument of a number and generates a new 
 file with the number of random numbers that is specified in the parameter, and 
