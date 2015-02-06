@@ -10,7 +10,7 @@
 
 #ifndef INSERTION_SORT_H
 #define INSERTION_SORT_H
-#include "node.h"
+#include "../node.h"
 
 using namespace std;
 

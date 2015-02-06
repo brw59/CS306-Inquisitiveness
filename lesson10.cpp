@@ -15,13 +15,13 @@
 #include <ctime>           // for time(), part of the random process
 #include <stdlib.h>        // for rand() and srand()
 #include "sortValue.h"     // for SortValue to instrument the sort algorithms
-#include "sortBubble.h"    // for sortBubble()
-#include "sortSelection.h" // for sortSelection()
-#include "sortInsertion.h" // for sortInsertion()
-#include "sortBinary.h"    // for sortBinary()
-#include "sortHeap.h"      // for sortHeap()
-#include "sortMerge.h"     // for sortMerge()
-#include "sortQuick.h"     // for sortQuick()
+#include "bubble/sortBubble.h"    // for sortBubble()
+#include "selection/sortSelection.h" // for sortSelection()
+#include "insertionSort/sortInsertion.h" // for sortInsertion()
+#include "binary/sortBinary.h"    // for sortBinary()
+#include "heap/sortHeap.h"      // for sortHeap()
+#include "merge/sortMerge.h"     // for sortMerge()
+#include "quicksort/sortQuick.h"     // for sortQuick()
 using namespace std;
 
 // prototypes for our test functions

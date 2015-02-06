@@ -11,7 +11,7 @@
 #ifndef SORT_BINARY_H
 #define SORT_BINARY_H
 
-#include "bst.h"
+#include "../binarySortTree/bst.h"
 #include <cassert>
 
 /*****************************************************
@@ -27,7 +27,7 @@ void sortBinary(T array[], int num)
 
    int i = 0;                           //Index through array
    BSTIterator<T> it = tree.begin();    //Iterate through tree
-   for (it; it != NULL; ++it)
+   for (; it != NULL; ++it)
    {
       array[i] = *it;                   //Replace array with sorted items
       i++;
