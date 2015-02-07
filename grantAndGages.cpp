@@ -1,35 +1,35 @@
 /***********************************************************************
-* Program:
-*    Lesson 10, Sorting
-*    Brother Helfrich, CS 235
-* Author:
-*    Br. Helfrich and the Gang
-* Summary: 
-*    This is a driver program to exercise various Sort algorithsm. When you
-*    submit your program, this should not be changed in any way.  That being
-*    said, you may need to modify this once or twice to get it to work.
-************************************************************************/
+ * Program:
+ *    Lesson 10, Sorting
+ *    Brother Helfrich, CS 235
+ * Author:
+ *    Br. Helfrich and the Gang
+ * Summary: 
+ *    This is a driver program to exercise various Sort algorithsm. When you
+ *    submit your program, this should not be changed in any way.  That being
+ *    said, you may need to modify this once or twice to get it to work.
+ ************************************************************************/
 
-#include <iostream>        // for CIN and COUT
-#include <iomanip>         // for SETW
-#include <ctime>           // for time(), part of the random process
-#include <stdlib.h>        // for rand() and srand()
-#include <istream>         // for input data read
-#include <vector>          // for buffer when reading data
-#include "sortValue.h"     // for SortValue to instrument the sort algorithms
-#include "bubble/sortBubble.h"    // for sortBubble()
-#include "selection/sortSelection.h" // for sortSelection()
+#include <iostream>                      // for CIN and COUT
+#include <iomanip>                       // for SETW
+#include <ctime>                         // for time(), part of the random process
+#include <stdlib.h>                      // for rand() and srand()
+#include <istream>                       // for input data read
+#include <vector>                        // for buffer when reading data
+#include "sortValue.h"                   // for SortValue to instrument the sort algorithms
+#include "bubble/sortBubble.h"           // for sortBubble()
+#include "selection/sortSelection.h"     // for sortSelection()
 #include "insertionSort/sortInsertion.h" // for sortInsertion()
-#include "binary/sortBinary.h"    // for sortBinary()
-#include "heap/sortHeap.h"      // for sortHeap()
-#include "merge/sortMerge.h"     // for sortMerge()
-#include "quicksort/sortQuick.h"     // for sortQuick()
+#include "binary/sortBinary.h"           // for sortBinary()
+#include "heap/sortHeap.h"               // for sortHeap()
+#include "merge/sortMerge.h"             // for sortMerge()
+#include "quicksort/sortQuick.h"         // for sortQuick()
 using namespace std;
 
 // prototypes for our test functions
-void compareSorts(string fileName, long inputSize);
-void compareSortsAutomated(string);
-void testIndividualSorts(int);
+void compareSorts(string fileName, long fromSize, long toSize, int option, int skip);
+void compareSortsAutomated(string filename);
+void testIndividualSorts(int choice);
 
 /******************************************
  * SORT NAME AND FUNCTION
@@ -42,7 +42,13 @@ struct SortNameAndFunction
    void (* sortInteger)(int       array[], int num);
    void (* sortValue  )(SortValue array[], int num);
 };
-const SortNameAndFunction sorts[] =
+
+/***************************************************************************
+ * Get information from a file!
+ *
+ * NOTE: not used yet!
+ ***************************************************************************/
+const SortNameAndFunction SORTS[] =
 {
    { NULL,             NULL,          NULL          },
    { "Bubble Sort",    sortBubble,    sortBubble    },
@@ -54,75 +60,37 @@ const SortNameAndFunction sorts[] =
    { "Quick Sort",     sortQuick,     sortQuick     }
 };
 
-/**********************************************************************
- * MAIN
- * This is just a simple menu to launch a collection of tests
- ***********************************************************************/
-int main(const int argc, const char* argv[])
-{
-   // menu, built from the sortValues list above
-   cout << "Select the test you want to run:\n";
-   cout << "\t0. To compare all the sorting algoritms\n";
-   for (int i = 1; i <= 7; i++)
-      cout << '\t' << i << ". "
-           << sorts[i].name << endl;
-   
-   // user specifies his choice
-   int choice;
-   cout << "> ";
-   cin  >> choice;
-   
-   if (cin.fail())
-   {
-      cout << "Goodbye!\n";
-      return 0;
-   }
-   
-   // execute the user's choice
-   //if (choice == 0)
-   compareSorts(argv[1], atol(argv[2]));
-   //else if (choice >= 1 && choice <= 7)
-   //   testIndividualSorts(choice);
-   //else
-   //   cout << "Unrecognized command, exiting...\n";
-   
-   return 0;
-}
 
-void readTestArrays(SortValue * & arrayStart,
-                      SortValue * & arraySort,
-                      int & num, string filename = "")
+void readTestArrays(
+      SortValue * &arrayStart,
+      SortValue * &arraySort,
+      int & num,
+      string filename = "")
 {
-    int intBuffer;
-    vector<int> buffer;
-    
-    if (filename == "")
-    {
-        // prompt for file to read
-        cout << "Where is the input file?\n> ";
-        getline(cin, filename);
-    }
-    
-    // read the file
-    cout << "Reading file: " << filename << endl;
-    ifstream fin(filename.c_str());
-    if(!fin.is_open())
-    {
-        cout << "File not found! Aborting application...\n";
-        exit(0);
-    }
-    while(fin >> intBuffer)
-    {
-        buffer.push_back(intBuffer);
-    }
-    
-    // copy to array to fit in with the other kids
-    num = buffer.size();
-    arrayStart = new(nothrow) SortValue[num];
-    arraySort  = new(nothrow) SortValue[num];
-    
-    for (int i = 0; i < num; i++)
-        arrayStart[i] = buffer[i];
+   int temp;
+   vector<int> buffer;
+
+   ifstream fin(filename.c_str());
+
+   if(!fin.is_open())
+   {
+      cerr << "File not found! Aborting application...\n";
+      exit(0);
+   }
+
+   while(fin >> temp)
+   {
+      buffer.push_back(temp);
+   }
+
+   // copy to array to fit in with the other kids
+   num = buffer.size();
+   arrayStart = new(nothrow) SortValue[num];
+   arraySort  = new(nothrow) SortValue[num]; // empty?
+
+   for (int i = 0; i < num; i++)
+      arrayStart[i] = buffer[i];
+
 }
 
 /*******************************************
@@ -130,10 +98,13 @@ void readTestArrays(SortValue * & arrayStart,
  * Generate test arrays for the purpose of
  * comparing sorts.  This function has one
  * client: compareSort()
+ * 
+ * args:
+ * option of which test to run
  *****************************************/
 void createTestArrays(SortValue * & arrayStart,
-                      SortValue * & arraySort,
-                      long & num)
+      SortValue * & arraySort,
+      long & num, int option)
 {   
    // prompt for size
    //cout << "How many items in the test (10000 - 40000 are good numbers)? ";
@@ -149,15 +120,15 @@ void createTestArrays(SortValue * & arrayStart,
    }
 
    // fill the array with random values
-   cout << "What type of test would you like to run?\n";
-   cout << "   1. random numbers\n";
-   cout << "   2. already sorted in ascending order\n";
-   cout << "   3. already sorted in decending order\n";
-   cout << "   4. almost sorted in ascending order\n";
-   cout << "   5. random but with a small number of possible values\n";
-   cout << "> ";
-   int option;
-   cin >> option;
+   // cout << "What type of test would you like to run?\n";
+   // cout << "   1. random numbers\n";
+   // cout << "   2. already sorted in ascending order\n";
+   // cout << "   3. already sorted in decending order\n";
+   // cout << "   4. almost sorted in ascending order\n";
+   // cout << "   5. random but with a small number of possible values\n";
+   // cout << "> ";
+   // int option;
+   // cin >> option;
 
    switch (option)
    {
@@ -186,14 +157,14 @@ void createTestArrays(SortValue * & arrayStart,
 
 void compareSortsAutomated(string filename)
 {
-    // allocate the array
-   SortValue * arrayStart;
-   SortValue * arraySort;
+   // allocate the array
+   SortValue* arrayStart;
+   SortValue* arraySort;
    int num;
-    
+
    readTestArrays(arrayStart, arraySort, num, filename);
-    
-    // get ready with the header to the table
+
+   // get ready with the header to the table
    srand(time(NULL));
    cout.setf(ios::fixed);
    cout.precision(2);
@@ -201,8 +172,10 @@ void compareSortsAutomated(string filename)
    cout << "      Sort Name    Time       Assigns      Compares\n";
    cout << " ---------------+-------+-------------+-------------\n";
 
-   for (int iSort = 1; iSort <= 7; iSort++)
+   for (int iSort = 4; iSort <= 7; iSort++)
    {
+
+
       // get ready by copying the un-sorted numbers to the array
       for (int iValue = 0; iValue < num; iValue++)
          arraySort[iValue] = arrayStart[iValue];
@@ -210,14 +183,14 @@ void compareSortsAutomated(string filename)
 
       // perform the sort
       int msBegin = clock();
-      sorts[iSort].sortValue(arraySort, num);
+      SORTS[iSort].sortValue(arraySort, num);
       int msEnd = clock();
 
       // report the results
-      cout << setw(15) << sorts[iSort].name                    << " |"
-           << setw(6)  << (float)(msEnd - msBegin) / 1000000.0 << " |"
-           << setw(12) << arraySort[0].getAssigns()            << " |"
-           << setw(12) << arraySort[0].getCompares()           << endl;
+      cout << setw(15) << SORTS[iSort].name                    << " |"
+         << setw(6)  << (float)(msEnd - msBegin) / 1000000.0 << " |"
+         << setw(12) << arraySort[0].getAssigns()            << " |"
+         << setw(12) << arraySort[0].getCompares()           << endl;
    }
 
    // all done
@@ -229,67 +202,82 @@ void compareSortsAutomated(string filename)
  * COMPARE SORTS
  * Compare the relative speed of the various sorts
  ******************************************/
-void compareSorts(string fileName, long inputSize)
+void compareSorts(string fileName, long fromSize, long toSize, int option, int skipSize = 1000)
 {
    // allocate the array
    SortValue * arrayStart;
    SortValue * arraySort;
    //int num;
-    
-    // prompt for input type
-    //string buffer;
-    //cout << "Would you like to get input from a file?\n> ";
-    //cin.ignore(128, '\n');
-    //getline(cin, buffer);
-    
-    //if(tolower(buffer[0]) == 'y')
-    //    readTestArrays(arrayStart, arraySort, num);
-    //else
-   createTestArrays(arrayStart, arraySort, inputSize);
-    
-   if (arrayStart == NULL || arraySort == NULL)
-      return;
+
+   // prompt for input type
+   //string buffer;
+   //cout << "Would you like to get input from a file?\n> ";
+   //cin.ignore(128, '\n');
+   //getline(cin, buffer);
+
+   //if(tolower(buffer[0]) == 'y')
+   //    readTestArrays(arrayStart, arraySort, num);
+   //else
+
+   createTestArrays(arrayStart, arraySort, toSize, option);
+
+   srand(time(NULL));
 
    // get ready with the header to the table
-   srand(time(NULL));
    cout.setf(ios::fixed);
    cout.precision(2);
    system("clear");
    cout << "      Sort Name    Time       Assigns      Compares\n";
-   cout << " ---------------+-------+-------------+-------------\n";
-   
+
    ofstream fout;
    fout.open(fileName.c_str(), ios::app);
 
-   fout << inputSize << ", ";
-   
-   for (int iSort = 1; iSort <= 7; iSort++)
+   for (long inputSize = fromSize; inputSize < toSize; inputSize += skipSize)
    {
-      // get ready by copying the un-sorted numbers to the array
-      for (int iValue = 0; iValue < inputSize; iValue++)
-         arraySort[iValue] = arrayStart[iValue];
-      arraySort[0].reset();
 
-      // perform the sort
-      int msBegin = clock();
-      sorts[iSort].sortValue(arraySort, inputSize);
-      int msEnd = clock();
+      if (arrayStart == NULL || arraySort == NULL)
+         return;
 
-      // report the results
-      float timeResults = (float)(msEnd - msBegin) / 1000000.0;
-      
-      fout << timeResults << ", ";      
+      cout << inputSize << "\n";
+      cout << " ---------------+-------+-------------+-------------\n";
 
-      cout << setw(15) << sorts[iSort].name          << " |"
-           << setw(6)  << timeResults                << " |"
-           << setw(12) << arraySort[0].getAssigns()  << " |"
-           << setw(12) << arraySort[0].getCompares() << endl;
+
+      fout << inputSize << ", ";
+
+      fout << "0, ";
+      fout << "0, ";
+      fout << "0, ";
+
+      for (int iSort = 4; iSort <= 7; iSort++)
+      {
+         // get ready by copying the un-sorted numbers to the array
+         for (int iValue = 0; iValue < inputSize; iValue++)
+            arraySort[iValue] = arrayStart[iValue];
+         arraySort[0].reset();
+
+         // perform the sort
+         int msBegin = clock();
+         SORTS[iSort].sortValue(arraySort, inputSize);
+         int msEnd = clock();
+
+         // report the results
+         float timeResults = (float)(msEnd - msBegin) / 1000000.0;
+
+         fout << timeResults << ", ";      
+
+         cout << setw(15) << SORTS[iSort].name          << " |"
+            << setw(6)  << timeResults                << " |"
+            << setw(12) << arraySort[0].getAssigns()  << " |"
+            << setw(12) << arraySort[0].getCompares() << endl;
+      }
+
+
+      fout << endl;
+
    }
 
-   fout << endl;
-   
    fout.close();
-   
+
    // all done
    delete [] arrayStart;
    delete [] arraySort;
@@ -308,7 +296,7 @@ void compareSorts(string fileName, long inputSize)
 void testIndividualSorts(int choice)
 {
    assert(choice >= 1 && choice <= 7);
-   
+
    // prepare the array
    int array[] =
    {
@@ -321,32 +309,74 @@ void testIndividualSorts(int choice)
       177, 224, 131, 446, 591, 882, 913, 201, 441, 673, 997, 137, 195, 281,
       563, 151
    };
+
    int size = sizeof(array) / sizeof(array[0]);
 
    // display the list before they are sorted
-   cout << sorts[choice].name << endl;
+   cout << SORTS[choice].name << endl;
    cout << "\tBefore:\t" << array[0];
    for (int i = 1; i < size; i++)
       cout << (i % 10 == 0 ? ",\n\t\t" : ", ")
-           << array[i];
+         << array[i];
    cout << endl << endl;
 
    // perform the sort
-   sorts[choice].sortInteger(array, size);
+   SORTS[choice].sortInteger(array, size);
 
    // report the results
    bool sorted = true;
    cout << "\tAfter:\t" << array[0];
+
    for (int i = 1; i < size; i++)
    {
       cout << (i % 10 == 0 ? ",\n\t\t" : ", ")
-           << array[i];
+         << array[i];
       if (array[i - 1] > array[i])
          sorted = false;
    }
+
    cout << endl;
    cout << "The array is "
-        << (sorted ? "" : "NOT ")
-        << "sorted\n";
+      << (sorted ? "" : "NOT ")
+      << "sorted\n";
 }
 
+
+/**********************************************************************
+ * MAIN
+ * This is just a simple menu to launch a collection of tests
+ ***********************************************************************/
+int main(const int argc, const char* argv[])
+{
+
+   if (argc < 4)
+   {
+      //                                     1       2         3             4
+      cout << "Useage: $ " << argv[0] << "[typeOfInput] [fromSize] [toSize] [ResultsFileName]" << endl;
+      cout << endl;
+      cout << "NOTE: right now this will increment by 1,000 from fromSize to toSize";
+      cout << endl;
+      cout << "Types of input:";
+      cout << "   1. random numbers\n";
+      cout << "   2. already sorted in ascending order\n";
+      cout << "   3. already sorted in decending order\n";
+      cout << "   4. almost sorted in ascending order\n";
+      cout << "   5. random but with a small number of possible values\n";
+      cout << endl << endl;
+
+   } else {
+
+      // execute the user's choice
+      //if (choice == 0)
+      // void compareSorts(string fileName, long fromSize, long toSize, int option);
+
+      compareSorts(argv[4], atol(argv[2]), atol(argv[3]), atoi(argv[1]));
+
+      //else if (choice >= 1 && choice <= 7)
+      //   testIndividualSorts(choice);
+      //else
+      //   cout << "Unrecognized command, exiting...\n";
+   }
+
+   return 0;
+}
