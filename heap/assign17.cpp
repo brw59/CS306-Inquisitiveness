@@ -10,54 +10,54 @@
 * Notes
 ***********************************************************************/
 
-#include <iostream>
-#include <fstream>
-#include <vector>
+// #include <iostream>
+// #include <fstream>
+// #include <vector>
 #include <math.h>
 
 using namespace std;
 
 //prototypes
 void heapify(vector <int> & storage);
-void sort(vector <int> & storage);
+void heapsort(vector <int> storage);
 void heapSort(vector <int> & storage);
 void percolateDown(int position, int size, vector <int> & storage);
 
 /***********************************************************************
 * Driver program
 ***********************************************************************/
-int main(int argc, char * argv[])
-{
-   ifstream fin(argv[1]);
+// int main(int argc, char * argv[])
+// {
+//    ifstream fin(argv[1]);
    
-   //error check
-   if (fin.fail())
-   {
-      cout << "Unable to open file.\n";
-      return 0;
-   }
+//    //error check
+//    if (fin.fail())
+//    {
+//       cout << "Unable to open file.\n";
+//       return 0;
+//    }
    
-   vector <int> storage;
-   int data;
+//    vector <int> storage;
+//    int data;
    
-   //read in data
-   while (fin >> data)
-      storage.push_back(data);
+//    //read in data
+//    while (fin >> data)
+//       storage.push_back(data);
 
-   sort(storage);
+//    sort(storage);
 
-   //display
-   for (int i = 0; i < storage.size(); i++)
-      cout << storage[i] << " ";
-   cout << endl;
+//    //display
+//    for (int i = 0; i < storage.size(); i++)
+//       cout << storage[i] << " ";
+//    cout << endl;
    
-   return 0;
-}
+//    return 0;
+// }
 
 /***********************************************************************
 * sorts by heap sort
 ***********************************************************************/
-void sort(vector <int> & storage)
+void heapsort(vector <int> storage)
 {
    heapify(storage);
    heapSort(storage);
@@ -66,7 +66,7 @@ void sort(vector <int> & storage)
 /***********************************************************************
 * turns the vector storage into a heap
 ***********************************************************************/
-void heapify(vector <int> & storage)
+void heapify(vector <int> storage)
 {
    //starting at the first non leaf, percolate down until to we hit root
    for (int i = floor((storage.size() - 1) / 2.0); i >= 0; i--)
