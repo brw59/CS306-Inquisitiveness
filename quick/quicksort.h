@@ -1,6 +1,6 @@
 #ifndef QUICKSORT_H
 #define QUICKSORT_H
 
-void quickSort(int numbers[], int beginning, int end);
+void quicksort(int elements[], int size);
 
 #endif /* QUICKSORT_H */

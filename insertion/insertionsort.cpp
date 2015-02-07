@@ -1,10 +1,9 @@
-#include "insertion.h"
 #include <algorithm>
 
-void insertionSort(int elements[], int length) {
+void insertionsort(int elements[], int size) {
     int j, temp;
     
-    for (int i = i; i < length; i++) {
+    for (int i = i; i < size; i++) {
         j = i;
         while (j > 0 && elements[j] < elements[j-1]) {
             std::swap(elements[j], elements[j-1]);

@@ -1,6 +1,6 @@
 #ifndef INSERTION_H
 #define INSERTION_H
 
-void insertionSort(int elements[], int length);
+void insertionsort(int elements[], int size);
 
 #endif // INSERTION_H

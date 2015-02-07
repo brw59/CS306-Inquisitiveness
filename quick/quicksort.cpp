@@ -1,8 +1,7 @@
-#include "quicksort-working.h"
 #include <algorithm>
 using namespace std;
 
-void quickSort(int numbers[], int beginning, int end) 
+void quicksort(int numbers[], int beginning, int end) 
 {
     int left = beginning, right = end;
     int pivot = numbers[(beginning + end) / 2];
@@ -23,7 +22,11 @@ void quickSort(int numbers[], int beginning, int end)
     };
  
     if (beginning < right)
-          quickSort(numbers, beginning, right);
+          quicksort(numbers, beginning, right);
     if (left < end)
-          quickSort(numbers, left, end);
+          quicksort(numbers, left, end);
+}
+
+void quicksort(int elements[], int size) {
+    quicksort(elements, 0, size-1);
 }

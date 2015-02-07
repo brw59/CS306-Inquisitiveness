@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     while (in >> num)
         vec.push_back(num);
 
-    bubbleSort(&vec[0], vec.size()-1);
+    bubblesort(&vec[0], vec.size());
 
     for (vector<int>::const_iterator i = vec.begin(); i != vec.end(); ++i)
         cout << *i << endl;
