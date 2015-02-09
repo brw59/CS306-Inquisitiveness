@@ -15,7 +15,7 @@
 using namespace std;
 
 void readFile(const string filename, vector<int> &vec) {
-    ifstream in(filename);
+    ifstream in(filename.c_str());
     int num;
 
     while (in >> num)
