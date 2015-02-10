@@ -1,3 +1,17 @@
-/a.out
-/sort
-/.ftpsync_settings
+## Vim
+*~
+
+## C++
+*.o
+*.out
+
+## OSX
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+## Linux
+.Trash-*
+
+## Other
+*.csv
