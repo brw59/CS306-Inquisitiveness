@@ -1,5 +1,5 @@
 #include <string>
-#include <ctime>
+#include <chrono>
 #include <fstream>
 #include <algorithm>
 #include <vector>
@@ -22,8 +22,10 @@ void readFile(const string filename, vector<int> &vec) {
         vec.push_back(num);
 }
 
-double calcTime(const clock_t &start, const clock_t &finish) {
-    return (finish - start) / (double) CLOCKS_PER_SEC;
+double calcTime(const chrono::high_resolution_clock::time_point &start, 
+        const chrono::high_resolution_clock::time_point &finish) {
+    auto time_span = chrono::duration_cast< chrono::duration<double> >(finish-start);
+    return time_span.count();
 }
 
 int main() {
@@ -31,7 +33,7 @@ int main() {
        "data/r10000.txt", "data/r100000.txt", "data/r1000000.txt"};
 
     vector<int> elements;
-    clock_t start, finish;
+    chrono::high_resolution_clock::time_point start, finish;
     cout << "number,quicksort,heapsort,bubble sort, insertion sort\n";
     for (int i = 0; i < 5; i++) {
         elements.clear();
@@ -41,33 +43,33 @@ int main() {
         cout << elements.size() << ",";
 
         // quicksort time
-        start = clock();
+        start = chrono::high_resolution_clock::now();
         quicksort(&elements[0], elements.size());
-        finish = clock();
+        finish = chrono::high_resolution_clock::now();
         cout << setprecision(5) << fixed << calcTime(start,finish) << ",";
 
         elements = orig;
 
         // mergesort time
-        start = clock();
+        start = chrono::high_resolution_clock::now();
         heapsort(&elements[0], elements.size());
-        finish = clock(); 
+        finish = chrono::high_resolution_clock::now(); 
         cout << setprecision(5) << fixed << calcTime(start,finish) << ",";
 
         elements = orig;
 
         // bubble sort
-        start = clock();
+        start = chrono::high_resolution_clock::now();
         bubblesort(&elements[0], elements.size());
-        finish = clock();
+        finish = chrono::high_resolution_clock::now();
         cout << setprecision(5) << fixed << calcTime(start,finish) << ",";
 
         elements = orig;
 
         // insertion sort
-        start = clock();
+        start = chrono::high_resolution_clock::now();
         insertionsort(&elements[0], elements.size());
-        finish = clock();
+        finish = chrono::high_resolution_clock::now();
         cout << setprecision(5) << fixed << calcTime(start,finish) << ",";
 
         cout << "\n";
