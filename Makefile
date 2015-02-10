@@ -1,6 +1,9 @@
 compare: comparison.cpp sorts
 	g++ -o compare.out comparison.cpp bubblesort.o heapsort.o insertionsort.o quicksort.o
 
+fast: comparison.cpp sorts
+	g++ -O3 -o compare-fast.out comparison.cpp bubblesort.o heapsort.o insertionsort.o quicksort.o
+
 sorts: bubblesort.o heapsort.o insertionsort.o quicksort.o
 
 bubblesort.o: bubble/bubblesort.cpp bubble/bubblesort.h
