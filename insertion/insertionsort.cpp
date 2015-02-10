@@ -3,7 +3,7 @@
 void insertionsort(int elements[], int size) {
     int j, temp;
     
-    for (int i = i; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         j = i;
         while (j > 0 && elements[j] < elements[j-1]) {
             std::swap(elements[j], elements[j-1]);
@@ -11,4 +11,3 @@ void insertionsort(int elements[], int size) {
         }
     }
 }
-            
